@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <style>
+        textarea{
+            width:100%;
+        }
+        .width{
+            width:100%;
+            padding-left:5;
+        }
+        #italic{
+            font-style: italic;
+        }
+        #inside{
+            margin: 0 auto; /* Added */
+            float: none; /* Added */
+            margin-bottom: 10px; /* Added */
+            padding: 25px;
+        }
+    </style>
+    <title>Main Page</title>
+</head>
+<body>
+    <div class="card">
+        <div class="card-header">
+            <div class="col">
+                <a href="/logout"  class="float-right">Log Out</a>
+                <h3 class="font-italic">CodingDojo Wall</h3>
+            </div>
+            <h1 class="text-center">Welcome, {{ user.first_name }}!</h1>
+        </div>
+        <div class="card-body">
+            <p class="text-success">
+                {% if messages %}
+                    {% for message in messages %}
+                        {{ message.message }}
+                    {% endfor %}
+                {% endif %}
+            </p>
+            <p class="font-weight-bold">Post a message</p>
+            <form action="/post_message" method="post">
+                {% csrf_token %}
+                <textarea name="message_content"></textarea>
+                <input type="submit" class="float-right" value="Post Message">
+            </form>
+            <div>
+                <!-- Loop through posts -->
+                <div class="card" style="width: 45rem;" id="inside">
+                    {% for message in all_messages reversed %}
+                        <p class="font-italic" class = "name">{{ message.user.first_name }} {{ message.user.last_name }} - {{ message.created_at }}</p>
+                        <p>{{ message.message }}</p>
+                        <!-- Attach comments -->
+                        <div>
+                            {% for comment in message.has_comments.all reversed %}
+                                <p  class="text-right" id="italic" class="name">{{ comment.user.first_name }} {{ comment.user.last_name }} - {{ comment.created_at }} </p>
+                                <p class="text-right">{{ comment.comment }}</p>
+                            {% endfor %}
+                            <form action="post_comment" method="post">
+                            {% csrf_token %}
+                                <p class="font-weight-bold">Post a comment</p>
+                                <textarea class="width" name="comment"></textarea>
+                                <input type="submit" class="float-right" value="Post Comment">
+                            </form>  
+                        </div>    
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
